@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <title>ObraFlux — Gestão de orçamentos</title>
+  <style>
+    :root{
+      --bg:#f3f6fb;--panel:#fff;--ink:#172033;--muted:#778198;--line:#e5eaf2;
+      --nav:#101827;--nav2:#1b2940;--blue:#4169f5;--blue2:#3154d9;--green:#0d9b72;
+      --amber:#b7791f;--red:#d64545;--shadow:0 10px 30px rgba(18,32,58,.07);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer}
+    .app{min-height:100vh;display:grid;grid-template-columns:250px 1fr}
+    aside{background:var(--nav);color:#eaf0ff;padding:25px 17px;display:flex;flex-direction:column;gap:28px}
+    .brand{display:flex;align-items:center;gap:11px;padding:0 8px}
+    .brand-mark{width:42px;height:42px;border-radius:13px;background:linear-gradient(145deg,#6484ff,#3451d4);display:grid;place-items:center;font-weight:900;font-size:20px;box-shadow:0 8px 20px #3451d455}
+    .brand-name{font-size:20px;font-weight:850;letter-spacing:-.6px}.brand-name span{color:#8ea5ff}
+    .brand-sub{font-size:11px;color:#9aa9c4;margin-top:3px}
+    .nav-label{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#7888a6;padding:0 12px;margin-bottom:8px}
+    .nav{display:grid;gap:6px}
+    .nav button{border:0;background:transparent;color:#aebbd2;text-align:left;padding:12px;border-radius:11px;display:flex;gap:12px;align-items:center;font-size:13px;font-weight:650}
+    .nav button.active,.nav button:hover{background:var(--nav2);color:#fff}
+    .nav .ico{width:20px;text-align:center;font-size:16px}
+    .side-bottom{margin-top:auto;border:1px solid #2a3850;background:#182338;padding:15px;border-radius:14px}
+    .side-bottom strong{font-size:12px;display:block;margin-bottom:6px}.side-bottom p{font-size:11px;color:#aebbd2;line-height:1.55;margin:0}
+    .side-bottom button{margin-top:12px;border:0;border-radius:9px;background:#344e9e;color:#fff;padding:9px 10px;font-size:11px;font-weight:750;width:100%}
+    main{padding:28px 32px 42px;min-width:0;max-width:1600px;width:100%;margin:auto}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:27px}
+    .eyebrow{color:var(--blue);font-size:11px;text-transform:uppercase;letter-spacing:1.3px;font-weight:850;margin-bottom:6px}
+    h1{font-size:27px;letter-spacing:-.9px;margin:0;font-weight:850}
+    .subtitle{font-size:13px;color:var(--muted);margin-top:7px}
+    .top-actions{display:flex;gap:10px;align-items:center}
+    .pill{display:inline-flex;align-items:center;gap:7px;padding:8px 11px;border:1px solid var(--line);border-radius:999px;background:#fff;color:#65718a;font-size:11px;font-weight:700}
+    .dot{width:7px;height:7px;border-radius:50%;background:#17b982}
+    .btn{border:0;border-radius:11px;padding:11px 15px;font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.15s}
+    .btn-primary{background:var(--blue);color:white;box-shadow:0 5px 12px #4169f52b}.btn-primary:hover{background:var(--blue2);transform:translateY(-1px)}
+    .btn-light{background:white;border:1px solid var(--line);color:#46516a}.btn-light:hover{background:#f7f9fd}
+    .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-bottom:20px}
+    .metric{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:19px;box-shadow:0 4px 15px #182b4a05;min-width:0}
+    .metric-top{display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--muted);font-size:12px;font-weight:650}
+    .metric-icon{width:34px;height:34px;display:grid;place-items:center;background:#edf1ff;border-radius:11px;font-size:16px}
+    .metric-value{font-size:27px;font-weight:850;letter-spacing:-1px;margin-top:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .metric-foot{font-size:11px;color:var(--muted);margin-top:7px}.metric-foot strong{color:var(--green)}
+    .content-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(270px,.8fr);gap:18px;align-items:start}
+    .panel{background:white;border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 4px 15px #182b4a05;min-width:0}
+    .panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:20px 20px 15px}
+    .panel-title{font-size:15px;font-weight:850;letter-spacing:-.3px}.panel-desc{font-size:11px;color:var(--muted);margin-top:5px}
+    .link-btn{border:0;background:transparent;color:var(--blue);font-size:11px;font-weight:800;padding:5px}
+    .toolbar{display:flex;gap:9px;padding:0 20px 15px;flex-wrap:wrap}
+    .search{position:relative;flex:1;min-width:160px}.search span{position:absolute;left:12px;top:10px;color:#8993a8}
+    .search input,.toolbar select{height:37px;border:1px solid var(--line);background:#fbfcfe;border-radius:10px;padding:0 11px;color:var(--ink);font-size:11px;outline:none}
+    .search input{width:100%;padding-left:34px}.toolbar select{min-width:125px}
+    input:focus,select:focus,textarea:focus{border-color:#8ba0ff!important;box-shadow:0 0 0 3px #4169f516;outline:none}
+    .table-wrap{overflow-x:auto}
+    table{border-collapse:collapse;width:100%;min-width:680px}
+    th{text-align:left;padding:11px 17px;background:#fafbfe;border-top:1px solid #f0f2f7;border-bottom:1px solid #edf0f6;color:#8a93a7;text-transform:uppercase;font-size:9px;letter-spacing:.8px}
+    td{padding:14px 17px;border-bottom:1px solid #f0f2f7;font-size:11px;vertical-align:middle}
+    tr:last-child td{border-bottom:0}
+    .client{display:flex;align-items:center;gap:10px;min-width:160px}
+    .avatar{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:11px;font-weight:850;background:#edf1ff;color:#3e5de1;flex-shrink:0}
+    .client-name{font-size:11px;font-weight:800}.client-type{font-size:10px;color:var(--muted);margin-top:4px}
+    .service{font-weight:700}.sub-cell{font-size:10px;color:var(--muted);margin-top:4px}
+    .status{display:inline-flex;align-items:center;gap:5px;padding:6px 8px;border-radius:7px;font-size:9px;font-weight:850;white-space:nowrap}
+    .status-new{background:#eef2ff;color:#465fe0}.status-sent{background:#fff4dd;color:#a16b13}.status-neg{background:#f3eaff;color:#8751bc}.status-won{background:#e4f8f0;color:#087c59}.status-lost{background:#fceaea;color:#c14343}
+    .row-actions{display:flex;gap:5px}.icon-btn{border:1px solid var(--line);background:white;border-radius:8px;width:29px;height:29px;color:#69758e}
+    .icon-btn:hover{color:var(--blue);border-color:#b8c5ff}
+    .right-col{display:grid;gap:18px}
+    .follow-list{padding:0 17px 10px}
+    .follow-item{display:flex;gap:11px;padding:13px 2px;border-bottom:1px solid #f0f2f7}
+    .follow-item:last-child{border-bottom:0}
+    .follow-date{width:42px;flex-shrink:0;text-align:center;border-radius:10px;background:#f3f6fc;padding:8px 3px}
+    .follow-date b{font-size:13px;display:block}.follow-date span{font-size:9px;color:var(--muted);text-transform:uppercase}
+    .follow-name{font-size:11px;font-weight:800}.follow-note{font-size:10px;color:var(--muted);line-height:1.5;margin-top:4px}
+    .follow-tag{display:inline-block;margin-top:6px;color:#9b6a13;background:#fff4dd;border-radius:5px;padding:4px 6px;font-size:9px;font-weight:800}
+    .empty{padding:30px;text-align:center;color:var(--muted);font-size:12px}
+    .quick-stats{padding:0 20px 19px}
+    .stat-line{display:flex;align-items:center;justify-content:space-between;font-size:11px;margin:17px 0 8px}
+    .stat-line span{color:#68738a}.stat-line strong{font-size:11px}
+    .progress{height:7px;background:#edf0f6;border-radius:999px;overflow:hidden}.progress div{height:100%;border-radius:999px;background:var(--blue)}
+    .note{margin-top:18px;padding:13px 15px;border:1px dashed #cbd5e6;border-radius:13px;color:#69758e;font-size:10px;line-height:1.6;background:#f9fbff}
+    .note strong{color:#36415a}
+    .toast{position:fixed;right:22px;bottom:22px;background:#14213a;color:white;padding:13px 17px;border-radius:12px;box-shadow:var(--shadow);font-size:12px;z-index:50;display:none;max-width:calc(100vw - 30px)}
+    .modal-backdrop{position:fixed;inset:0;background:#0d1729a6;display:none;align-items:center;justify-content:center;padding:18px;z-index:20}
+    .modal-backdrop.open{display:flex}
+    .modal{width:min(620px,100%);max-height:92vh;overflow:auto;background:white;border-radius:20px;box-shadow:0 25px 90px #07112666}
+    .modal-head{padding:22px 23px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:start;gap:12px}
+    .modal-head h2{font-size:19px;margin:0;letter-spacing:-.5px}.modal-head p{font-size:11px;color:var(--muted);margin:6px 0 0}
+    .close{border:1px solid var(--line);background:#fff;border-radius:9px;width:33px;height:33px}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;padding:21px 23px}
+    .field{display:grid;gap:7px}.field.full{grid-column:1/-1}.field label{font-size:11px;font-weight:800;color:#505b72}
+    .field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:#fbfcfe;font-size:12px;color:var(--ink)}
+    .field textarea{resize:vertical;min-height:75px}
+    .modal-actions{display:flex;justify-content:flex-end;gap:9px;padding:0 23px 22px}
+    .section-view{display:none}.section-view.active{display:block}
+    .board{display:grid;grid-template-columns:repeat(3,minmax(210px,1fr));gap:13px;padding:0 20px 20px;overflow:auto}
+    .board-col{background:#f6f8fc;border:1px solid #e9edf5;border-radius:13px;padding:12px;min-height:150px}
+    .board-col h3{font-size:11px;margin:0 0 10px;display:flex;justify-content:space-between}
+    .board-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:9px;box-shadow:0 3px 8px #17203306}
+    .board-card strong{font-size:11px}.board-card p{font-size:10px;color:var(--muted);margin:6px 0}
+    .board-card select{width:100%;border:1px solid var(--line);border-radius:7px;padding:7px;font-size:10px;background:white}
+    .settings-card{margin:0 20px 20px;padding:20px;border:1px solid var(--line);border-radius:14px}
+    .settings-card h3{font-size:14px;margin:0 0 7px}.settings-card p{font-size:12px;color:var(--muted);line-height:1.6}
+    .footer{text-align:center;color:#98a1b2;font-size:10px;margin-top:22px}
+    @media(max-width:1100px){.app{grid-template-columns:215px 1fr}main{padding:24px 20px}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.content-grid{grid-template-columns:1fr}.right-col{grid-template-columns:1fr 1fr}}
+    @media(max-width:720px){.app{display:block}aside{padding:13px 14px;gap:12px}.brand{padding:0 3px}.brand-mark{width:36px;height:36px}.brand-name{font-size:18px}.brand-sub{display:none}.nav-label,.side-bottom{display:none}.nav{display:flex;overflow-x:auto;gap:5px}.nav button{white-space:nowrap;padding:10px 11px;font-size:11px}.nav .ico{font-size:14px}main{padding:20px 13px 30px}.topbar{align-items:flex-start;flex-direction:column;margin-bottom:20px}.top-actions{width:100%;justify-content:space-between}.metrics{gap:10px}.metric{padding:14px;border-radius:14px}.metric-value{font-size:22px;margin-top:13px}.metric-top{font-size:10px}.metric-icon{width:29px;height:29px}.content-grid{gap:13px}.right-col{grid-template-columns:1fr}.panel-head{padding:16px 14px 13px}.toolbar{padding:0 14px 13px}.table-wrap table{min-width:650px}.board{padding:0 12px 15px}.form-grid{grid-template-columns:1fr;padding:17px}.field.full{grid-column:auto}.modal-head{padding:18px}.modal-actions{padding:0 17px 18px}.pill{font-size:10px}.subtitle{max-width:95%}h1{font-size:24px}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="brand">
+      <div class="brand-mark">O</div>
+      <div><div class="brand-name">obra<span>flux</span></div><div class="brand-sub">GESTÃO COMERCIAL SIMPLES</div></div>
+    </div>
+    <div>
+      <div class="nav-label">Workspace</div>
+      <nav class="nav" aria-label="Navegação principal">
+        <button class="active" data-view="dashboard"><span class="ico">▦</span> Visão geral</button>
+        <button data-view="quotes"><span class="ico">▤</span> Orçamentos</button>
+        <button data-view="pipeline"><span class="ico">◫</span> Etapas de venda</button>
+        <button data-view="settings"><span class="ico">⚙</span> Configurações</button>
+      </nav>
+    </div>
+    <div class="side-bottom">
+      <strong>✦ Feito para quem trabalha na rua</strong>
+      <p>Organize pedidos, acompanhe propostas e saiba quem precisa de retorno.</p>
+      <button id="sideNew">+ Cadastrar orçamento</button>
+    </div>
+  </aside>
+
+  <main>
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Painel comercial / demonstração</div>
+        <h1 id="pageTitle">Visão geral</h1>
+        <div class="subtitle" id="pageSubtitle">Acompanhe seus orçamentos e mantenha cada oportunidade em movimento.</div>
+      </div>
+      <div class="top-actions">
+        <div class="pill"><span class="dot"></span> Modo demonstração</div>
+        <button class="btn btn-primary" id="newQuote"><span>＋</span> Novo orçamento</button>
+      </div>
+    </header>
+
+    <section class="section-view active" id="view-dashboard">
+      <div class="metrics">
+        <article class="metric"><div class="metric-top"><span>Orçamentos abertos</span><span class="metric-icon">▤</span></div><div class="metric-value" id="mOpen">0</div><div class="metric-foot">Pedidos em andamento</div></article>
+        <article class="metric"><div class="metric-top"><span>Valor em negociação</span><span class="metric-icon">↗</span></div><div class="metric-value" id="mValue">R$ 0</div><div class="metric-foot">Soma dos orçamentos abertos</div></article>
+        <article class="metric"><div class="metric-top"><span>Fechados</span><span class="metric-icon">✓</span></div><div class="metric-value" id="mWon">0</div><div class="metric-foot"><strong id="mWonValue">R$ 0</strong> em vendas registradas</div></article>
+        <article class="metric"><div class="metric-top"><span>Retornos pendentes</span><span class="metric-icon">◷</span></div><div class="metric-value" id="mFollow">0</div><div class="metric-foot">Agendados para hoje ou antes</div></article>
+      </div>
+
+      <div class="content-grid">
+        <section class="panel">
+          <div class="panel-head"><div><div class="panel-title">Orçamentos recentes</div><div class="panel-desc">Acompanhe as oportunidades mais recentes.</div></div><button class="link-btn" data-goto="quotes">Ver todos →</button></div>
+          <div class="toolbar">
+            <div class="search"><span>⌕</span><input id="dashSearch" placeholder="Buscar cliente ou serviço..." aria-label="Buscar cliente ou serviço"></div>
+            <select id="dashStatus" aria-label="Filtrar por status"><option value="">Todos os status</option><option>Novo pedido</option><option>Enviado</option><option>Negociação</option><option>Fechado</option><option>Perdido</option></select>
+          </div>
+          <div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Serviço</th><th>Valor</th><th>Status</th><th>Retorno</th><th>Ações</th></tr></thead><tbody id="quoteRows"></tbody></table></div>
+        </section>
+        <div class="right-col">
+          <section class="panel">
+            <div class="panel-head"><div><div class="panel-title">Próximos retornos</div><div class="panel-desc">Não deixe uma oportunidade esfriar.</div></div><span class="metric-icon">◷</span></div>
+            <div class="follow-list" id="followList"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><div><div class="panel-title">Funil comercial</div><div class="panel-desc">Distribuição dos orçamentos por etapa.</div></div></div>
+            <div class="quick-stats" id="pipelineStats"></div>
+          </section>
+        </div>
+      </div>
+      <div class="note"><strong>Modo demonstração:</strong> os nomes e valores iniciais são fictícios. Os registros criados ficam salvos neste navegador. Não use dados reais de clientes nesta versão de teste.</div>
+    </section>
+
+    <section class="section-view" id="view-quotes">
+      <section class="panel">
+        <div class="panel-head"><div><div class="panel-title">Todos os orçamentos</div><div class="panel-desc">Cadastre, pesquise, edite e acompanhe seus pedidos.</div></div><button class="btn btn-primary" id="newQuote2">＋ Novo orçamento</button></div>
+        <div class="toolbar">
+          <div class="search"><span>⌕</span><input id="allSearch" placeholder="Buscar por cliente, telefone ou serviço..." aria-label="Buscar orçamentos"></div>
+          <select id="allStatus" aria-label="Filtrar status"><option value="">Todos os status</option><option>Novo pedido</option><option>Enviado</option><option>Negociação</option><option>Fechado</option><option>Perdido</option></select>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Serviço</th><th>Valor</th><th>Status</th><th>Retorno</th><th>Ações</th></tr></thead><tbody id="allRows"></tbody></table></div>
+      </section>
+    </section>
+
+    <section class="section-view" id="view-pipeline">
+      <section class="panel">
+        <div class="panel-head"><div><div class="panel-title">Etapas de venda</div><div class="panel-desc">Mude o status de cada oportunidade conforme ela avança.</div></div></div>
+        <div class="board" id="board"></div>
+      </section>
+    </section>
+
+    <section class="section-view" id="view-settings">
+      <section class="panel">
+        <div class="panel-head"><div><div class="panel-title">Configurações da demonstração</div><div class="panel-desc">Gerencie os dados locais deste protótipo.</div></div></div>
+        <div class="settings-card">
+          <h3>Dados e privacidade</h3>
+          <p>Esta versão salva os orçamentos no armazenamento local do navegador. Eles não são sincronizados entre computadores, não possuem login e podem ser apagados se os dados do navegador forem limpos. Use somente informações fictícias nesta demonstração.</p>
+          <button class="btn btn-light" id="exportCsv">↓ Exportar orçamentos CSV</button>
+          <button class="btn btn-light" id="resetDemo">Restaurar dados de demonstração</button>
+        </div>
+        <div class="settings-card">
+          <h3>Próxima etapa do produto</h3>
+          <p>Antes de vender assinaturas, será necessário implementar autenticação, banco de dados seguro, separação dos dados de cada empresa, cópias de segurança e uma política de privacidade adequada.</p>
+        </div>
+      </section>
+    </section>
+    <div class="footer">OBRAFLUX · DEMONSTRAÇÃO INDEPENDENTE · VERSÃO 0.1</div>
+  </main>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <div class="modal-head"><div><h2 id="modalTitle">Novo orçamento</h2><p>Preencha os dados para acompanhar esta oportunidade.</p></div><button class="close" id="closeModal" aria-label="Fechar">✕</button></div>
+    <form id="quoteForm">
+      <div class="form-grid">
+        <div class="field"><label for="customer">Nome do cliente *</label><input id="customer" required maxlength="90" placeholder="Ex.: João da Silva"></div>
+        <div class="field"><label for="phone">Telefone (opcional)</label><input id="phone" maxlength="30" placeholder="(00) 00000-0000"></div>
+        <div class="field full"><label for="service">Serviço solicitado *</label><input id="service" required maxlength="120" placeholder="Ex.: Portão de correr sob medida"></div>
+        <div class="field"><label for="value">Valor estimado (R$)</label><input id="value" type="number" min="0" step="0.01" placeholder="0,00"></div>
+        <div class="field"><label for="status">Etapa atual</label><select id="status"><option>Novo pedido</option><option>Enviado</option><option>Negociação</option><option>Fechado</option><option>Perdido</option></select></div>
+        <div class="field"><label for="date">Data do pedido *</label><input id="date" type="date" required></div>
+        <div class="field"><label for="followDate">Próximo retorno</label><input id="followDate" type="date"></div>
+        <div class="field full"><label for="notes">Observações (opcional)</label><textarea id="notes" maxlength="500" placeholder="Medidas pendentes, visita técnica, cor, material..."></textarea></div>
+      </div>
+      <div class="modal-actions"><button type="button" class="btn btn-light" id="cancelModal">Cancelar</button><button type="submit" class="btn btn-primary">Salvar orçamento</button></div>
+    </form>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(() => {
+  const KEY = "obraflux_demo_v1";
+  const statuses = ["Novo pedido","Enviado","Negociação","Fechado","Perdido"];
+  const statusClass = {"Novo pedido":"status-new","Enviado":"status-sent","Negociação":"status-neg","Fechado":"status-won","Perdido":"status-lost"};
+  const today = new Date();
+  const dateISO = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  const offsetDate = n => { const d = new Date(); d.setDate(d.getDate()+n); return dateISO(d); };
+  const initial = [
+    {id:1,customer:"Marcos Pereira",phone:"",service:"Portão de correr sob medida",value:4850,status:"Negociação",date:offsetDate(-2),followDate:offsetDate(0),notes:"Confirmar acabamento e medidas."},
+    {id:2,customer:"Ana Martins",phone:"",service:"Cobertura de policarbonato",value:2300,status:"Enviado",date:offsetDate(-1),followDate:offsetDate(1),notes:"Proposta enviada; aguardar retorno."},
+    {id:3,customer:"Carlos Souza",phone:"",service:"Grade para janela",value:980,status:"Novo pedido",date:offsetDate(0),followDate:offsetDate(0),notes:"Agendar visita para tirar medidas."},
+    {id:4,customer:"Fernanda Lima",phone:"",service:"Toldo retrátil",value:3650,status:"Fechado",date:offsetDate(-6),followDate:"",notes:"Exemplo fictício de venda fechada."},
+    {id:5,customer:"Roberto Alves",phone:"",service:"Corrimão de inox",value:1750,status:"Perdido",date:offsetDate(-8),followDate:"",notes:"Exemplo fictício de orçamento perdido."}
+  ];
+  let quotes = load();
+  let editingId = null;
+  let toastTimer;
+  const $ = id => document.getElementById(id);
+  const money = n => Number(n||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL",maximumFractionDigits:2});
+  const dateBR = s => { if(!s) return "—"; const [y,m,d]=s.split("-"); return `${d}/${m}/${y}`; };
+  const initials = s => s.split(/\s+/).slice(0,2).map(x=>x[0]||"").join("").toUpperCase();
+  function load(){ try { const raw=localStorage.getItem(KEY); return raw ? JSON.parse(raw) : structuredClone(initial); } catch { return structuredClone(initial); } }
+  function save(){ try { localStorage.setItem(KEY,JSON.stringify(quotes)); } catch { toast("Não foi possível salvar neste navegador."); } }
+  function toast(msg){ const t=$("toast");t.textContent=msg;t.style.display="block";clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.style.display="none",3000); }
+  function filtered(search,status){
+    const q=(search||"").trim().toLowerCase();
+    return quotes.filter(x=>(!status||x.status===status)&&(!q||[x.customer,x.phone,x.service,x.notes].join(" ").toLowerCase().includes(q)));
+  }
+  function badge(s){ return `<span class="status ${statusClass[s]||"status-new"}">${s}</span>`; }
+  function row(x){
+    return `<tr>
+      <td><div class="client"><div class="avatar">${escapeHtml(initials(x.customer))}</div><div><div class="client-name">${escapeHtml(x.customer)}</div><div class="client-type">${escapeHtml(x.phone||"Cliente")}</div></div></div></td>
+      <td><div class="service">${escapeHtml(x.service)}</div><div class="sub-cell">${escapeHtml(x.notes||"Sem observações")}</div></td>
+      <td><strong>${money(x.value)}</strong></td><td>${badge(x.status)}</td><td>${dateBR(x.followDate)}</td>
+      <td><div class="row-actions"><button class="icon-btn" title="Editar" aria-label="Editar ${escapeHtml(x.customer)}" data-edit="${x.id}">✎</button><button class="icon-btn" title="Excluir" aria-label="Excluir ${escapeHtml(x.customer)}" data-delete="${x.id}">×</button></div></td>
+    </tr>`;
+  }
+  function escapeHtml(s){ return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+  function renderRows(){
+    const dash=filtered($("dashSearch").value,$("dashStatus").value).slice(0,6);
+    const all=filtered($("allSearch").value,$("allStatus").value);
+    $("quoteRows").innerHTML=dash.length?dash.map(row).join(""):`<tr><td colspan="6"><div class="empty">Nenhum orçamento encontrado.</div></td></tr>`;
+    $("allRows").innerHTML=all.length?all.map(row).join(""):`<tr><td colspan="6"><div class="empty">Nenhum orçamento encontrado.</div></td></tr>`;
+    renderMetrics();renderFollow();renderStats();renderBoard();
+  }
+  function renderMetrics(){
+    const open=quotes.filter(x=>!["Fechado","Perdido"].includes(x.status));
+    const won=quotes.filter(x=>x.status==="Fechado");
+    const overdue=quotes.filter(x=>x.followDate&&x.followDate<=dateISO(new Date())&&!["Fechado","Perdido"].includes(x.status));
+    $("mOpen").textContent=open.length;
+    $("mValue").textContent=money(open.reduce((a,x)=>a+Number(x.value||0),0));
+    $("mWon").textContent=won.length;
+    $("mWonValue").textContent=money(won.reduce((a,x)=>a+Number(x.value||0),0));
+    $("mFollow").textContent=overdue.length;
+  }
+  function renderFollow(){
+    const list=quotes.filter(x=>x.followDate&&!["Fechado","Perdido"].includes(x.status)).sort((a,b)=>a.followDate.localeCompare(b.followDate)).slice(0,5);
+    $("followList").innerHTML=list.length?list.map(x=>{
+      const [y,m,d]=x.followDate.split("-");
+      const dt=new Date(Number(y),Number(m)-1,Number(d));
+      const day=String(dt.getDate()).padStart(2,"0");
+      const mon=dt.toLocaleDateString("pt-BR",{month:"short"}).replace(".","");
+      const isLate=x.followDate<dateISO(new Date());
+      const isToday=x.followDate===dateISO(new Date());
+      return `<div class="follow-item"><div class="follow-date"><b>${day}</b><span>${mon}</span></div><div><div class="follow-name">${escapeHtml(x.customer)}</div><div class="follow-note">${escapeHtml(x.service)}<br>${dateBR(x.followDate)}</div><span class="follow-tag" style="${isLate?'background:#fceaea;color:#c14343':isToday?'':'background:#eef2ff;color:#465fe0'}">${isLate?"Atrasado":isToday?"Retornar hoje":"Próximo retorno"}</span></div></div>`;
+    }).join(""):`<div class="empty">Sem retornos pendentes. Cadastre uma data de retorno em um orçamento.</div>`;
+  }
+  function renderStats(){
+    const total=quotes.length||1;
+    const counts=statuses.map(s=>({s,n:quotes.filter(x=>x.status===s).length}));
+    $("pipelineStats").innerHTML=counts.map(x=>`<div class="stat-line"><span>${x.s}</span><strong>${x.n}</strong></div><div class="progress"><div style="width:${Math.round(x.n/total*100)}%"></div></div>`).join("");
+  }
+  function renderBoard(){
+    const groups=[["Novo pedido","Enviado"],["Negociação"],["Fechado","Perdido"]];
+    const names=["Entrada e envio","Em negociação","Resultado"];
+    $("board").innerHTML=groups.map((g,i)=>{
+      const items=quotes.filter(x=>g.includes(x.status));
+      return `<div class="board-col"><h3>${names[i]} <span>${items.length}</span></h3>${items.length?items.map(x=>`<div class="board-card"><strong>${escapeHtml(x.customer)}</strong><p>${escapeHtml(x.service)}</p><p>${money(x.value)}</p><select data-status-id="${x.id}" aria-label="Alterar status de ${escapeHtml(x.customer)}">${statuses.map(s=>`<option ${s===x.status?"selected":""}>${s}</option>`).join("")}</select></div>`).join(""):`<div class="empty">Nenhum orçamento</div>`}</div>`;
+    }).join("");
+  }
+  function openModal(id=null){
+    editingId=id;
+    $("quoteForm").reset();
+    const q=quotes.find(x=>x.id===id);
+    $("modalTitle").textContent=q?"Editar orçamento":"Novo orçamento";
+    $("customer").value=q?.customer||"";
+    $("phone").value=q?.phone||"";
+    $("service").value=q?.service||"";
+    $("value").value=q?.value??"";
+    $("status").value=q?.status||"Novo pedido";
+    $("date").value=q?.date||dateISO(new Date());
+    $("followDate").value=q?.followDate||"";
+    $("notes").value=q?.notes||"";
+    $("modalBackdrop").classList.add("open");
+    setTimeout(()=>$("customer").focus(),50);
+  }
+  function closeModal(){ $("modalBackdrop").classList.remove("open"); editingId=null; }
+  function go(view){
+    document.querySelectorAll(".section-view").forEach(x=>x.classList.toggle("active",x.id==="view-"+view));
+    document.querySelectorAll("[data-view]").forEach(x=>x.classList.toggle("active",x.dataset.view===view));
+    const titles={dashboard:["Visão geral","Acompanhe seus orçamentos e mantenha cada oportunidade em movimento."],quotes:["Orçamentos","Todos os pedidos em um só lugar."],pipeline:["Etapas de venda","Visualize o andamento de cada oportunidade."],settings:["Configurações","Gerencie esta demonstração local."]};
+    $("pageTitle").textContent=titles[view][0];$("pageSubtitle").textContent=titles[view][1];
+  }
+  $("quoteForm").addEventListener("submit",e=>{
+    e.preventDefault();
+    const value=Number($("value").value||0);
+    if(value<0){toast("O valor não pode ser negativo.");return;}
+    const item={id:editingId||Date.now(),customer:$("customer").value.trim(),phone:$("phone").value.trim(),service:$("service").value.trim(),value,status:$("status").value,date:$("date").value,followDate:$("followDate").value,notes:$("notes").value.trim()};
+    if(!item.customer||!item.service||!item.date){toast("Preencha os campos obrigatórios.");return;}
+    if(editingId){quotes=quotes.map(x=>x.id===editingId?item:x);toast("Orçamento atualizado.");}
+    else{quotes.unshift(item);toast("Orçamento cadastrado.");}
+    save();renderRows();closeModal();
+  });
+  document.addEventListener("click",e=>{
+    const edit=e.target.closest("[data-edit]");if(edit){openModal(Number(edit.dataset.edit));return;}
+    const del=e.target.closest("[data-delete]");if(del){
+      const item=quotes.find(x=>x.id===Number(del.dataset.delete));
+      if(item&&confirm(`Excluir o orçamento de ${item.customer}?`)){quotes=quotes.filter(x=>x.id!==item.id);save();renderRows();toast("Orçamento excluído.");}
+    }
+    const nav=e.target.closest("[data-view]");if(nav)go(nav.dataset.view);
+    const goto=e.target.closest("[data-goto]");if(goto)go(goto.dataset.goto);
+  });
+  document.addEventListener("change",e=>{
+    if(e.target.matches("[data-status-id]")){
+      const id=Number(e.target.dataset.statusId);quotes=quotes.map(x=>x.id===id?{...x,status:e.target.value}:x);save();renderRows();toast("Etapa atualizada.");
+    }
+  });
+  ["dashSearch","dashStatus","allSearch","allStatus"].forEach(id=>$(id).addEventListener("input",renderRows));
+  $("newQuote").addEventListener("click",()=>openModal());
+  $("newQuote2").addEventListener("click",()=>openModal());
+  $("sideNew").addEventListener("click",()=>openModal());
+  $("closeModal").addEventListener("click",closeModal);
+  $("cancelModal").addEventListener("click",closeModal);
+  $("modalBackdrop").addEventListener("click",e=>{if(e.target===$("modalBackdrop"))closeModal();});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
+  $("exportCsv").addEventListener("click",()=>{
+    const cols=["Cliente","Telefone","Serviço","Valor","Status","Data do pedido","Próximo retorno","Observações"];
+    const lines=[cols,...quotes.map(x=>[x.customer,x.phone,x.service,x.value,x.status,x.date,x.followDate,x.notes])];
+    const csv="\uFEFF"+lines.map(r=>r.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(";")).join("\r\n");
+    const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="obraflux-orcamentos.csv";a.click();URL.revokeObjectURL(url);toast("Arquivo CSV exportado.");
+  });
+  $("resetDemo").addEventListener("click",()=>{
+    if(confirm("Restaurar os dados fictícios iniciais? Seus registros locais atuais serão substituídos.")){quotes=structuredClone(initial);save();renderRows();toast("Dados de demonstração restaurados.");}
+  });
+  renderRows();
+})();
+</script>
+</body>
+</html>
